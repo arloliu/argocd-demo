@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+data:
+  kustomize.buildOptions: --enable-helm
+  configManagementPlugins: |-
+    - name: argocd-lovely-plugin
+      generate:
+        command: ["argocd-lovely-plugin"]
