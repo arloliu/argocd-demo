@@ -1,0 +1,5 @@
+namespace: argocd
+
+resources:
+  - argocd-app-of-apps.yaml
+  - argocd-ingress.yaml
