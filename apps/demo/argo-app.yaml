@@ -13,7 +13,8 @@ spec:
       releaseName: "test"
       values: |
         replicaCount: 2
-
+    plugin:
+      name: argocd-lovely-plugin
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: default
