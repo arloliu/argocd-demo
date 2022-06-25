@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: demo-app
+  namespace: default
+spec:
+  project: default
+  source:
+    repoURL: 'https://charts.bitnami.com/bitnami'
+    targetRevision: 12.0.5
+    chart: nginx
+    helm:
+      values: |
+        replicaCount: 2
+
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: default
