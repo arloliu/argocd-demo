@@ -6,7 +6,8 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: http://helm-repo.local/charts/packages
+    repoURL: https://github.com/arloliu/argocd-demo
+    path: apps/charts/packages
     targetRevision: 12.0.5
     chart: nginx
     helm:
