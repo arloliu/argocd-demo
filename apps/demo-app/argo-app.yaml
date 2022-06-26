@@ -6,13 +6,13 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://charts.bitnami.com/bitnami
+    repoURL: http://helm-repo.local/charts/packages
     targetRevision: 12.0.5
     chart: nginx
     helm:
       releaseName: "test"
       valueFiles:
-      - values.yaml
+      - ../../demo-app/values.yaml
     # plugin:
     #   name: argocd-lovely-plugin
   destination:

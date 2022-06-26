@@ -13,6 +13,6 @@ spec:
           pathType: ImplementationSpecific
           backend:
             service:
-              name: helm-repo
+              name: helm-repo-svc
               port:
                 number: 80

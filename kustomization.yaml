@@ -12,6 +12,7 @@ patches:
   - path: ingress-nginx-controller.yaml
     target:
       kind: Deployment
+      namespace: ingress-nginx
       name: ingress-nginx-controller
   - path: plugins/argocd-lovely-plugin.yaml
     target:

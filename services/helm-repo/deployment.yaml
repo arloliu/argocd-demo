@@ -58,7 +58,7 @@ spec:
               cpu: 100m
               memory: 100Mi
           args:
-            -
+            - /var/www/htdocs/argocd-demo/apps
             # - --no-listing
             - --port
             - "80"
@@ -66,7 +66,7 @@ spec:
             - name: http
               containerPort: 80
           volumeMounts:
-            - mountPath: /var/www/htdocs/argo-demo/apps
+            - mountPath: /var/www/htdocs
               name: webroot
       volumes:
         - name: webroot
