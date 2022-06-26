@@ -11,8 +11,8 @@ spec:
     chart: nginx
     helm:
       releaseName: "test"
-      values: |
-        replicaCount: 2
+      valuesFiles:
+        - values.yaml
     # plugin:
     #   name: argocd-lovely-plugin
   destination:
