@@ -13,15 +13,15 @@ patches:
     target:
       kind: Deployment
       name: ingress-nginx-controller
-  - path: argocd-cm.yaml
-    target:
-      kind: ConfigMap
-      labelSelector: app.kubernetes.io/name=argocd-cm
-  - path: plugins/argocd-lovely-plugin.yaml
-    target:
-      kind: Deployment
-      labelSelector: app.kubernetes.io/name=argocd-repo-server
-  # - path: argocd-repo-server.yaml
+  # - path: argocd-cm.yaml
+  #   target:
+  #     kind: ConfigMap
+  #     labelSelector: app.kubernetes.io/name=argocd-cm
+  # - path: plugins/argocd-lovely-plugin.yaml
   #   target:
   #     kind: Deployment
   #     labelSelector: app.kubernetes.io/name=argocd-repo-server
+  - path: argocd-repo-server.yaml
+    target:
+      kind: Deployment
+      labelSelector: app.kubernetes.io/name=argocd-repo-server
