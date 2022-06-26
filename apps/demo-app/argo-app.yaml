@@ -6,7 +6,8 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://raw.githubusercontent.com/arloliu/argocd-demo/main/apps/charts/packages
+    repoURL: https://raw.githubusercontent.com/arloliu/argocd-demo/main
+    path: apps/charts/packages
     targetRevision: 12.0.5
     chart: nginx
     helm:
