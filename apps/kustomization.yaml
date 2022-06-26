@@ -1,4 +1,4 @@
 namespace: argocd
 
 resources:
-  - demo/argo-app.yaml
+  - demo-app/argo-app.yaml
