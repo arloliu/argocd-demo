@@ -11,7 +11,7 @@ data:
     spec:
       version: v1.0
       generate:
-        command: ["/usr/local/bin/argocd-lovely-plugin"]
+        command: ["argocd-lovely-plugin"]
       discover:
         fileName: "./*.yaml"
       allowConcurrency: true
