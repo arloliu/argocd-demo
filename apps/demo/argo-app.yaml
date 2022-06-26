@@ -11,7 +11,7 @@ spec:
     chart: nginx
     helm:
       releaseName: "test"
-      valuesFiles:
+      valueFiles:
         - values.yaml
     # plugin:
     #   name: argocd-lovely-plugin
