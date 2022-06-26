@@ -8,3 +8,10 @@ data:
     - name: argocd-lovely-plugin
       generate:
         command: ["/usr/local/bin/argocd-lovely-plugin"]
+    - name: argocd-test-plugin
+      init:
+        command: [sh, -c]
+        args: ["helm dependency build"]
+      generate:
+        command: ["sh", "-c"]
+        args: ["helm template $ARGOCD_APP_NAME . --install-crds | /tmp/argocd-xfers-plugin"]

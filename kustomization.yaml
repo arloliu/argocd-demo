@@ -6,7 +6,7 @@ resources:
   - https://raw.githubusercontent.com/argoproj/argo-cd/v2.3.3/manifests/install.yaml
   - argocd-app-of-apps.yaml
   - argocd-ingress.yaml
-  # - argocd-cmp-plugin.yaml
+  - argocd-cmp-plugin.yaml
 
 patches:
   - path: ingress-nginx-controller.yaml
@@ -14,15 +14,15 @@ patches:
       kind: Deployment
       namespace: ingress-nginx
       name: ingress-nginx-controller
-  - path: plugins/argocd-lovely-plugin.yaml
-    target:
-      kind: Deployment
-      labelSelector: app.kubernetes.io/name=argocd-repo-server
-  - path: argocd-cm.yaml
-    target:
-      kind: ConfigMap
-      labelSelector: app.kubernetes.io/name=argocd-cm
   # - path: argocd-repo-server.yaml
   #   target:
   #     kind: Deployment
   #     labelSelector: app.kubernetes.io/name=argocd-repo-server
+  - path: argocd-cm.yaml
+    target:
+      kind: ConfigMap
+      labelSelector: app.kubernetes.io/name=argocd-cm
+  - path: plugins/argocd-lovely-plugin.yaml
+    target:
+      kind: Deployment
+      labelSelector: app.kubernetes.io/name=argocd-repo-server
