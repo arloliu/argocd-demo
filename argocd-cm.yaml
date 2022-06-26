@@ -7,4 +7,4 @@ data:
   configManagementPlugins: |-
     - name: argocd-lovely-plugin
       generate:
-        command: ["argocd-lovely-plugin"]
+        command: ["/usr/local/bin/argocd-lovely-plugin"]
