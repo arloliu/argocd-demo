@@ -16,17 +16,23 @@ spec:
           runAsNonRoot: true
           runAsUser: 999
         volumeMounts:
-          - mountPath: /var/run/argocd
-            name: var-files
-          - mountPath: /home/argocd/cmp-server/plugins
-            name: plugins
-          - mountPath: /tmp
-            name: tmp
+          - name: var-files
+            mountPath: /var/run/argocd
+          - name: plugins
+            mountPath: /home/argocd/cmp-server/plugins
+          - name: tmp
+            mountPath: /tmp
           # Remove this volumeMount if you've chosen to bake the config file into the sidecar image.
-          - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+          - name: cmp-plugin-volume
+            mountPath: /home/argocd/cmp-server/config/plugin.yaml
             subPath: plugin.yaml
-            name: cmp-plugin-volume
+          - name: custom-tools
+            mountPath: /usr/local/bin/argocd-lovely-plugin
+            subPath: argocd-lovely-plugin
+
       volumes:
         - configMap:
             name: cmp-plugin
           name: cmp-plugin-volume
+        - name: custom-tools
+          emptyDir: {}

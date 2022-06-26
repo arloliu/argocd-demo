@@ -10,13 +10,6 @@ spec:
     spec:
       containers:
       - name: argocd-repo-server
-        volumeMounts:
-        - name: custom-tools
-          mountPath: /usr/local/bin/argocd-lovely-plugin
-          subPath: argocd-lovely-plugin
-      volumes:
-      - name: custom-tools
-        emptyDir: {}
       initContainers:
       - name: download
         image: ghcr.io/crumbhole/argocd-lovely-plugin:stable
