@@ -12,7 +12,7 @@ spec:
     helm:
       releaseName: "test"
       valueFiles:
-        - values.yaml
+      - values.yaml
     # plugin:
     #   name: argocd-lovely-plugin
   destination:
