@@ -1,17 +1,39 @@
 #!/usr/bin/bash
-if [ -f /tmp/debug.log ]; then
-    rm /tmp/debug.log
-    touch /tmp/debug.log
-fi
 
-echo "PWD=$(pwd)" > /tmp/env.log
+rm -f /tmp/debug.log  /tmp/env.log
+
+export > /tmp/export.log
+
+POSSIBLE_ENV_VARS=( \
+    "HELM_REPO_URL" \
+    "HELM_CHART" \
+    "HELM_CHART_VERSION" \
+    "HELM_VALUE_FILES" \
+    "HELM_VALUES" \
+)
+
+logger() {
+    echo $1 >> /tmp/debug.log
+}
+
+sanitize_env_var() {
+    local argocd_env_var_name=ARGOCD_ENV_$1
+    local argocd_env_var_name_val=${!argocd_env_var_name}
+    [ "x$argocd_env_var_name_val" == "x" ] || eval "$1=$argocd_env_var_name_val"
+}
+
+for env_var in ${POSSIBLE_ENV_VARS[@]}; do
+    sanitize_env_var $env_var
+    echo "$env_var=${!env_var}" >> /tmp/env.log
+done
+
+echo "PWD=$(pwd)" >> /tmp/env.log
 echo "ARGOCD_APP_NAME=$ARGOCD_APP_NAME" >> /tmp/env.log
 echo "ARGOCD_APP_NAMESPACE=$ARGOCD_APP_NAMESPACE" >> /tmp/env.log
 echo "ARGOCD_APP_SOURCE_PATH=$ARGOCD_APP_SOURCE_PATH" >> /tmp/env.log
 echo "ARGOCD_APP_SOURCE_REPO_URL=$ARGOCD_APP_SOURCE_REPO_URL" >> /tmp/env.log
 echo "ARGOCD_APP_SOURCE_TARGET_REVISION=$ARGOCD_APP_SOURCE_TARGET_REVISION" >> /tmp/env.log
-echo "ARGOCD_APP_SOURCE_TARGET_REVISION=$ARGOCD_APP_SOURCE_TARGET_REVISION" >> /tmp/env.log
-export > /tmp/export.log
+
 
 # pull helm chart from specify helm repo and helm chart
 helm pull --untar --repo $HELM_REPO_URL $HELM_CHART --version $HELM_CHART_VERSION > /dev/null 2>&1 || exit 1
@@ -23,17 +45,18 @@ ls -al ./$HELM_CHART > /tmp/chart_files.log
 [ -d $HELM_CHART ] || exit 1
 [ -d "$HELM_CHART-$HELM_CHART_VERSION.tgz" ] || exit 1
 
-# parse HELM_CUSTOM_VALUE_FILES into argument for `helm template`
+# parse HELM_VALUE_FILES into argument for `helm template`
 ARGS=""
-for value_file in $HELM_CUSTOM_VALUE_FILES; do
+for value_file in $HELM_VALUE_FILES; do
     [ -f $value_file ] || continue
     ARGS="$ARGS -f $value_file"
 done
-# echo $ARGS
-echo "HELM_CHART=$HELM_CHART" >> /tmp/debug.log
-echo "HELM_CHART_VERSION=$HELM_CHART_VERSION" >> /tmp/debug.log
-echo "ARGS=$ARGS" >> /tmp/debug.log
 
-helm template --include-crds ./$HELM_CHART $ARGS > /tmp/helm_template.log
-echo "helm result: $?" >> /tmp/debug.log
-cat /tmp/helm_template.log
+for value in $HELM_VALUES; do
+    ARGS="$ARGS --set-string \"$value\""
+    logger "set env var '$value'"
+done
+logger "ARGS: ${ARGS}"
+
+helm template --include-crds ./$HELM_CHART $ARGS | tee /tmp/helm_template.log
+logger "helm result: $?"
