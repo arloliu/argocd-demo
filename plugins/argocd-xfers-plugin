@@ -58,5 +58,5 @@ for value in $HELM_VALUES; do
 done
 logger "ARGS: ${ARGS}"
 
-helm template --include-crds ./$HELM_CHART $ARGS | tee /tmp/helm_template.log
+helm template --include-crds $ARGOCD_APP_NAME ./$HELM_CHART $ARGS | tee /tmp/helm_template.log
 logger "helm result: $?"
