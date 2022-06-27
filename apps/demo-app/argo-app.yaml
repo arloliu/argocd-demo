@@ -10,7 +10,7 @@ spec:
     targetRevision: 12.0.5
     chart: nginx
     plugin:
-      name: argocd-test-plugin-helm
+      name: argocd-lovely-plugin
   destination:
     server: https://kubernetes.default.svc
     namespace: default

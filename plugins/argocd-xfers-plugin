@@ -1,7 +1,7 @@
 #!/bin/sh
 STDIN=$(cat -)
 echo $STDIN > /tmp/stdin.log
-helm template $ARGOCD_APP_NAME . > /tmp/helm.log
+# helm template $ARGOCD_APP_NAME . > /tmp/helm.log
 echo "PWD=$(pwd)" > /tmp/env.log
 echo "ARGOCD_APP_NAME=$ARGOCD_APP_NAME" >> /tmp/env.log
 echo "ARGOCD_APP_NAMESPACE=$ARGOCD_APP_NAMESPACE" >> /tmp/env.log
@@ -9,5 +9,6 @@ echo "ARGOCD_APP_SOURCE_PATH=$ARGOCD_APP_SOURCE_PATH" >> /tmp/env.log
 echo "ARGOCD_APP_SOURCE_REPO_URL=$ARGOCD_APP_SOURCE_REPO_URL" >> /tmp/env.log
 echo "ARGOCD_APP_SOURCE_TARGET_REVISION=$ARGOCD_APP_SOURCE_TARGET_REVISION" >> /tmp/env.log
 echo "ARGOCD_APP_SOURCE_TARGET_REVISION=$ARGOCD_APP_SOURCE_TARGET_REVISION" >> /tmp/env.log
+export > /tmp/export.log
 echo $STDIN
 
