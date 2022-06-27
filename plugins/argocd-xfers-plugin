@@ -10,5 +10,8 @@ echo "ARGOCD_APP_SOURCE_REPO_URL=$ARGOCD_APP_SOURCE_REPO_URL" >> /tmp/env.log
 echo "ARGOCD_APP_SOURCE_TARGET_REVISION=$ARGOCD_APP_SOURCE_TARGET_REVISION" >> /tmp/env.log
 echo "ARGOCD_APP_SOURCE_TARGET_REVISION=$ARGOCD_APP_SOURCE_TARGET_REVISION" >> /tmp/env.log
 export > /tmp/export.log
+ls -al > /tmp/files.log
+ls -al ../ > /tmp/repo-files.log
+
 echo $STDIN
 
