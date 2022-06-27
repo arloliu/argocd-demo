@@ -53,7 +53,7 @@ for value_file in $HELM_VALUE_FILES; do
 done
 
 for value in $HELM_VALUES; do
-    ARGS="$ARGS --set-string \"$value\""
+    ARGS="$ARGS --set $value"
     logger "set env var '$value'"
 done
 logger "ARGS: ${ARGS}"

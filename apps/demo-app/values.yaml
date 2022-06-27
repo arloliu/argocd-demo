@@ -1,4 +1,3 @@
 replicaCount: 3
 readinessProbe:
   enabled: true
-nameOverride: default-or
