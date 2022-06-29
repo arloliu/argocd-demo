@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-func GetEnv(name string) string {
+func Getenv(name string) string {
 	prefixed_env_var := os.Getenv(fmt.Sprintf("ARGOCD_ENV_%s", name))
 	if len(prefixed_env_var) < 1 {
 		return os.Getenv(name)

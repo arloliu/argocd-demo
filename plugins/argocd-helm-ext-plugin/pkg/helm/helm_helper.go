@@ -32,6 +32,7 @@ func getHelmValueType(name string) int {
 
 type HelmCli struct {
 	AppName      string
+	AppRevision  string
 	RepoUrl      string
 	Chart        string
 	ChartVersion string
@@ -41,13 +42,46 @@ type HelmCli struct {
 }
 
 func New(opts *config.Options) (*HelmCli, error) {
-	values_files := strings.Split(utils.GetEnv("HELM_VALUE_FILES"), " ")
+	values_files := strings.Split(utils.Getenv("HELM_VALUE_FILES"), " ")
 	for i, v := range values_files {
 		values_files[i] = strings.TrimSpace(v)
 	}
 
+	h := &HelmCli{
+		AppName:      os.Getenv("ARGOCD_APP_NAME"),
+		AppRevision:  os.Getenv("ARGOCD_APP_REVISION"),
+		RepoUrl:      utils.Getenv("HELM_REPO_URL"),
+		Chart:        utils.Getenv("HELM_CHART"),
+		ChartVersion: utils.Getenv("HELM_CHART_VERSION"),
+		ValueFiles:   values_files,
+		opts:         opts,
+	}
+
+	if len(h.AppName) == 0 {
+		return nil, errors.New("ARGOCD_APP_NAME is empty")
+	}
+	if len(h.RepoUrl) == 0 {
+		return nil, errors.New("HELM_REPO_URL is empty")
+	}
+	if len(h.Chart) == 0 {
+		return nil, errors.New("HELM_CHART is empty")
+	}
+	if len(h.ChartVersion) == 0 {
+		return nil, errors.New("HELM_CHART_VERSION is empty")
+	}
+
+	h.loadHelmValues()
+
+	return h, nil
+}
+
+func helmValuesStoreLocation(revision string) string {
+	return fmt.Sprintf("/tmp/values_%s.log", revision)
+}
+
+func parseHelmValues(helm_values string) map[string]string {
 	values := make(map[string]string)
-	values_env_var := strings.Split(utils.GetEnv("HELM_VALUES"), " ")
+	values_env_var := strings.Split(helm_values, ";")
 	for _, v := range values_env_var {
 		token := strings.Split(v, "=")
 		if len(token) != 2 {
@@ -55,31 +89,43 @@ func New(opts *config.Options) (*HelmCli, error) {
 		}
 		values[strings.TrimSpace(token[0])] = strings.TrimSpace(token[1])
 	}
+	return values
+}
 
-	cli := &HelmCli{
-		AppName:      os.Getenv("ARGOCD_APP_NAME"),
-		RepoUrl:      utils.GetEnv("HELM_REPO_URL"),
-		Chart:        utils.GetEnv("HELM_CHART"),
-		ChartVersion: utils.GetEnv("HELM_CHART_VERSION"),
-		ValueFiles:   values_files,
-		Values:       values,
-		opts:         opts,
+func (h *HelmCli) loadHelmValues() {
+	helm_values := utils.Getenv("HELM_VALUES")
+
+	if len(helm_values) == 0 {
+		value_store_file_path := helmValuesStoreLocation(h.AppRevision)
+		if _, err := os.Stat(value_store_file_path); err == nil {
+			if content, read_err := os.ReadFile(value_store_file_path); read_err == nil {
+				h.Values = parseHelmValues(string(content))
+				log.Printf("load previous helm values from %s\n", value_store_file_path)
+			}
+		}
+	} else {
+		log.Printf("load helm values: %s\n", helm_values)
+		h.Values = parseHelmValues(helm_values)
+	}
+}
+
+func (h *HelmCli) saveHelmValues() error {
+	if len(h.Values) == 0 {
+		return nil
 	}
 
-	if len(cli.AppName) == 0 {
-		return nil, errors.New("ARGOCD_APP_NAME is empty")
-	}
-	if len(cli.RepoUrl) == 0 {
-		return nil, errors.New("HELM_REPO_URL is empty")
-	}
-	if len(cli.Chart) == 0 {
-		return nil, errors.New("HELM_CHART is empty")
-	}
-	if len(cli.ChartVersion) == 0 {
-		return nil, errors.New("HELM_CHART_VERSION is empty")
+	var values []string
+	for k, v := range h.Values {
+		values = append(values, fmt.Sprintf("%s=%s", k, v))
 	}
 
-	return cli, nil
+	value_store_file_path := helmValuesStoreLocation(h.AppRevision)
+	err := os.WriteFile(value_store_file_path, []byte(strings.Join(values, ";")), 0644)
+	if err != nil {
+		return errors.New(fmt.Sprintf("store helm values to %s fail", value_store_file_path))
+	}
+	log.Printf("save helm values to %s\n", value_store_file_path)
+	return nil
 }
 
 func (h *HelmCli) PullChart() error {
@@ -128,12 +174,24 @@ func (h *HelmCli) GenerateTemplate() error {
 	cmd := exec.Command("helm", args...)
 	cmd.Stdout = &out
 
-	log.Printf("Execute: %s %s\n", cmd.Path, strings.Join(cmd.Args, " "))
+	log.Printf("Execute(%s): %s %s\n", h.AppRevision, cmd.Path, strings.Join(cmd.Args, " "))
 
 	if err := cmd.Run(); err != nil {
 		return errors.New(fmt.Sprintf("pull chart %s error: %s\n", h.Chart, err.Error()))
 	}
 
+	helm_template_file, err := os.OpenFile("/tmp/generated_template.yaml", os.O_RDWR|os.O_CREATE, 0644)
+	if err != nil {
+		os.Exit(1)
+	}
+	helm_template_file.Write(out.Bytes())
+	helm_template_file.Close()
+
 	fmt.Print(out.String())
+
+	if err := h.saveHelmValues(); err != nil {
+		return err
+	}
+
 	return nil
 }

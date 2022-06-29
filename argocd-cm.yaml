@@ -9,9 +9,6 @@ data:
       generate:
         command: ["/tmp/argocd-xfers-plugin"]
     - name: argocd-helm-ext-plugin
-      init:
-        command: ["/bin/sh", "-c"]
-        args: ["helm dependency build"]
       generate:
         command: ["/tmp/argocd-helm-ext-plugin"]
         args: ["--include-crds"]
