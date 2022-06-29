@@ -8,3 +8,7 @@ data:
     - name: argocd-test-plugin
       generate:
         command: ["/tmp/argocd-xfers-plugin"]
+    - name: argocd-helm-ext-plugin
+      generate:
+        command: ["/tmp/argocd-helm-ext-plugin"]
+        args: ["--include-crds"]

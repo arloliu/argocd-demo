@@ -22,7 +22,7 @@ patches:
     target:
       kind: ConfigMap
       labelSelector: app.kubernetes.io/name=argocd-cm
-  - path: plugins/argocd-lovely-plugin.yaml
-    target:
-      kind: Deployment
-      labelSelector: app.kubernetes.io/name=argocd-repo-server
+  # - path: plugins/argocd-lovely-plugin.yaml
+  #   target:
+  #     kind: Deployment
+  #     labelSelector: app.kubernetes.io/name=argocd-repo-server

@@ -10,7 +10,7 @@ spec:
     targetRevision: HEAD
     path: apps/demo-app
     plugin:
-      name: argocd-test-plugin
+      name: argocd-helm-ext-plugin
       env:
         - name: HELM_REPO_URL
           value: http://helm-repo.local/charts/packages

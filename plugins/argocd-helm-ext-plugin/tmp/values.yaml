@@ -1,0 +1,4 @@
+replicaCount: 2
+readinessProbe:
+  enabled: true
+nameOverride: web
