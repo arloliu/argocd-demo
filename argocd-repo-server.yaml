@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: argocd-lovely-plugin
+  name: argocd-helm-ext-plugin-patch
 spec:
   selector:
     matchLabels:
@@ -9,38 +9,30 @@ spec:
   template:
     spec:
       containers:
-      - name: cmp
-        command: [/var/run/argocd/argocd-cmp-server] # Entrypoint should be Argo CD lightweight CMP server i.e. argocd-cmp-server
-        image: busybox # This can be off-the-shelf or custom-built image
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 999
+      - name: argocd-repo-server
         volumeMounts:
-          - name: var-files
-            mountPath: /var/run/argocd
-          - name: plugins
-            mountPath: /home/argocd/cmp-server/plugins
-          - name: tmp
-            mountPath: /tmp
-          # Remove this volumeMount if you've chosen to bake the config file into the sidecar image.
-          - name: cmp-plugin-volume
-            mountPath: /home/argocd/cmp-server/config/plugin.yaml
-            subPath: plugin.yaml
           - name: custom-tools
-            mountPath: /usr/local/bin/argocd-lovely-plugin
-            subPath: argocd-lovely-plugin
+            mountPath: /usr/local/bin/argocd-helm-ext-plugin
+            subPath: argocd-helm-ext-plugin
 
       initContainers:
-      - name: download
-        image: ghcr.io/crumbhole/argocd-lovely-plugin:stable
-        imagePullPolicy: Always
+      - name: download-tools
+        image: alpine:3.8
+        imagePullPolicy: IfNotPresent
+        command: [sh, -c]
+        env:
+          - name: APP_VERSION
+            value: "v1.0.0"
+        args:
+          - >-
+            wget -O argocd-helm-ext-plugin
+            https://github.com/Xfers/argocd-helm-ext-plugin/raw/${APP_VERSION}/release/argocd-helm-ext-plugin &&
+            chmod +x argocd-helm-ext-plugin&&
+            mv argocd-helm-ext-plugin /custom-tools/
         volumeMounts:
           - mountPath: /custom-tools
             name: custom-tools
 
       volumes:
-        - configMap:
-            name: cmp-plugin
-          name: cmp-plugin-volume
         - name: custom-tools
           emptyDir: {}
