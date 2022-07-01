@@ -7,5 +7,5 @@ data:
   configManagementPlugins: |-
     - name: argocd-helm-ext-plugin
       generate:
-        command: ["argocd-helm-ext-plugin"]
+        command: ["/tmp/argocd-helm-ext-plugin"]
         args: ["--include-crds"]
